@@ -35,14 +35,14 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// ── Routes ──────────────────────────────────────────────────────────────────
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/bookings', bookingRoutes);
-app.use('/api/v1/stats', statsRoutes);
-app.use('/api/v1/logs', logRoutes);
+// ── Routes ──────────────────────────────────────────────────────────────
+app.use('/v1/auth',     authRoutes);
+app.use('/v1/bookings', bookingRoutes);
+app.use('/v1/stats',    statsRoutes);
+app.use('/v1/logs',     logRoutes);
 
-// ── Health check ────────────────────────────────────────────────────────────
-app.get('/api/v1/health', (_req, res) => {
+// ── Health check ───────────────────────────────────────────────────────
+app.get('/v1/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
