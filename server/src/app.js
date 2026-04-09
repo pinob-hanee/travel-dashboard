@@ -35,20 +35,30 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// ── Routes ──────────────────────────────────────────────────────────────
-app.use('/v1/auth',     authRoutes);
-app.use('/v1/bookings', bookingRoutes);
-app.use('/v1/stats',    statsRoutes);
-app.use('/v1/logs',     logRoutes);
+// ── Routes — mounted at both /v1/* and /api/v1/* ─────────────────────────────
+// Vercel may or may not strip the /api prefix depending on routing config.
+// Dual mounting guarantees it works in both cases.
+app.use('/v1/auth',         authRoutes);
+app.use('/v1/bookings',     bookingRoutes);
+app.use('/v1/stats',        statsRoutes);
+app.use('/v1/logs',         logRoutes);
 
-// ── Health check ───────────────────────────────────────────────────────
-app.get('/v1/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+app.use('/api/v1/auth',     authRoutes);
+app.use('/api/v1/bookings', bookingRoutes);
+app.use('/api/v1/stats',    statsRoutes);
+app.use('/api/v1/logs',     logRoutes);
 
-// ── 404 handler ─────────────────────────────────────────────────────────────
-app.use((_req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+// ── Health / root ─────────────────────────────────────────────────────────────
+const healthHandler = (_req, res) => {
+  res.json({ status: 'ok', service: 'TravelDash API', timestamp: new Date().toISOString() });
+};
+app.get('/',          healthHandler);
+app.get('/v1/health', healthHandler);
+app.get('/api/v1/health', healthHandler);
+
+// ── 404 handler ───────────────────────────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found', path: req.path });
 });
 
 // ── Global error handler ─────────────────────────────────────────────────────
